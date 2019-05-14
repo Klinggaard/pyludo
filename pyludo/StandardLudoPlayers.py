@@ -1,6 +1,7 @@
 import random
 import numpy as np
 from .utils import token_vulnerability
+from .utils import token_barricade
 
 """
 def play(self, state, dice_roll, next_states):
@@ -14,6 +15,30 @@ def play(self, state, dice_roll, next_states):
     :return:
         index of the token that is wished to be moved. If it is invalid, the first valid token will be chosen.
 """
+
+# q-Table states 
+home = 0
+common = 1
+safe = 2
+riskySafe = 3
+goalStretch = 4
+vulnerable = 5
+baricade = 6
+goal = 7
+
+# actions
+actOutHome = 0
+actCommon = 1
+actSafe = 2
+actGoalStretch = 3
+actStar = 4
+actGoal = 5
+actSuicide = 6
+actBaricade = 7
+actBecomeVulnerable = 8
+actKill = 9
+
+
 
 
 class LudoPlayerRandom:
@@ -63,3 +88,65 @@ class LudoPlayerDefensive:
                 continue
             hit_rates[token_id] = token_vulnerability(state, token_id)
         return random.choice(np.argwhere(hit_rates == np.max(hit_rates)))
+
+
+class LudoPlayerQ:
+    """" Learns to play the game via Q-learning"""
+    
+    def __init__(self):
+        self.qTable = np.array(    [[10,0,0,0,0,0,0,0],
+                                    [0,1,2,3,4,5,6,7],
+                                    [0,1,2,3,4,5,6,7],
+                                    [0,1,2,3,4,5,6,7],
+                                    [0,1,2,3,4,5,6,7],
+                                    [0,1,2,3,4,5,6,7],
+                                    [0,1,2,3,4,5,6,7],
+                                    [0,1,2,3,4,5,6,7],
+                                    [0,1,2,3,4,5,6,7],
+                                    [0,1,2,3,4,5,6,7]])
+
+    name = 'qLeaner'
+
+    @staticmethod
+    def play(self, state, dice_roll, next_states):
+
+        def getActions(state, dice_roll):
+            print("here")
+
+        def getState(state):
+            stateArr = np.zeros(4)
+            for i in range(len(state[0])):
+                position = state[i]
+                
+                if position == -1:
+                    stateArr[i] = home
+
+                if position > -1 and position < 52:
+                    stateArr[i] = common
+
+                if position == 1:
+                    stateArr[i] = safe
+                
+                if position > 51:
+                    stateArr[i] = goalStretch
+
+                if position % 13 == 1:
+                    stateArr[i] = riskySafe
+
+                if token_barricade(state, i):
+                    stateArr = baricade
+
+                if token_vulnerability(state,i) == 1 or token_vulnerability(state,i) == 2:
+                    stateArr[i] = vulnerable
+                
+                if position == 99:
+                    stateArr[i] = goal
+
+            
+            return stateArr
+
+        def chooseAction(state, dice_roll):
+        
+            return "action"
+    
+        print(self.qTable)

@@ -3,6 +3,8 @@ import numpy as np
 player_colors = ['green', 'blue', 'red', 'yellow']
 
 
+
+
 def star_jump(pos):
     if pos == -1 or pos > 51:
         return 0
@@ -72,3 +74,13 @@ def token_vulnerability(state, token_id):
                 if not would_enter_end_zone and 1 <= req_dice_roll <= 6:
                     n += 1
     return n
+
+
+def token_barricade(state, token_id):
+    player = state[0]
+    token = player[token_id]
+    equal_tokens = 0
+    for tokenIdx in range(len(state[0])):
+        if state[0][tokenIdx] == token:
+            equal_tokens += 1
+    return equal_tokens > 1

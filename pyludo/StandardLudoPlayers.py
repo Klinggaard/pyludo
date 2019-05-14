@@ -94,24 +94,23 @@ class LudoPlayerQ:
     """" Learns to play the game via Q-learning"""
     
     def __init__(self):
-        self.qTable = np.array(    [[10,0,0,0,0,0,0,0],
-                                    [0,1,2,3,4,5,6,7],
-                                    [0,1,2,3,4,5,6,7],
-                                    [0,1,2,3,4,5,6,7],
-                                    [0,1,2,3,4,5,6,7],
-                                    [0,1,2,3,4,5,6,7],
-                                    [0,1,2,3,4,5,6,7],
-                                    [0,1,2,3,4,5,6,7],
-                                    [0,1,2,3,4,5,6,7],
-                                    [0,1,2,3,4,5,6,7]])
+        self.qTable = np.array(    [[10,0,0,0,0,0,0,0,0,0], # home
+                                    [0,1,2,3,4,5,6,7,8,9],  # common
+                                    [0,1,2,3,4,5,6,7,8,9],  # safe
+                                    [0,1,2,3,4,5,6,7,8,9],  # riskySafe
+                                    [0,1,2,3,4,5,6,7,8,9],  # goalStretch
+                                    [0,1,2,3,4,5,6,7,8,9],  # vulnerable
+                                    [0,1,2,3,4,5,6,7,8,9],  # baricade
+                                    [0,1,2,3,4,5,6,7,8,9]]) # goal
 
     name = 'qLeaner'
 
     @staticmethod
     def play(self, state, dice_roll, next_states):
 
-        def getActions(state, dice_roll):
+        def getActions(next_states, dice_roll):
             print("here")
+
 
         def getState(state):
             stateArr = np.zeros(4)
@@ -146,7 +145,7 @@ class LudoPlayerQ:
             return stateArr
 
         def chooseAction(state, dice_roll):
-        
+            
             return "action"
     
         print(self.qTable)

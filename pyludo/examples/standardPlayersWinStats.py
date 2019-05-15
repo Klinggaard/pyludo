@@ -1,11 +1,11 @@
 from pyludo import LudoGame
-from pyludo.StandardLudoPlayers import LudoPlayerRandom, LudoPlayerFast, LudoPlayerAggressive, LudoPlayerDefensive
+from pyludo.StandardLudoPlayers import LudoPlayerRandom, LudoPlayerFast, LudoPlayerAggressive, LudoPlayerDefensive, LudoPlayerQ
 import random
 import time
 
 players = [
+    LudoPlayerQ(),
     LudoPlayerRandom(),
-    LudoPlayerFast(),
     LudoPlayerAggressive(),
     LudoPlayerDefensive(),
 ]

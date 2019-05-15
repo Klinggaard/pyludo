@@ -16,14 +16,14 @@ def play(self, state, dice_roll, next_states):
 """
 
 
-qTable = np.array(     [[10,0,0,0,0,0,0,0,0,0], # home
-                        [0,1,2,3,4,10,-100,7,8,9],  # common
-                        [0,1,2,3,4,10,-100,3,-10,5],  # safe
-                        [0,1,2,1,4,10,-100,7,2,0],  # riskySafe
-                        [0,0,-1,0,0,10,-100,0,0,0],  # goalStretch
-                        [0,1,2,3,4,10,-100,6,8,0],  # vulnerable
-                        [0,1,2,3,4,10,6,-200,-1,3],  # baricade
-                        [0,0,0,0,0,0,0,0,0,0]]) # goal
+qTable = np.array(     [[10,    0,  0,  0,  0,  0,  0,  0,  0,  0],                         # home
+                        [0, 1,  2,  3,  4,  10, -99,7,  8,  9,  7.5],                  # common
+                        [0, 1,  2,  3,  4,  10, -99,3,  -10,5,  7.5],                # safe
+                        [0, 1,  2,  1,  4,  10, -99,7,  2,  0,  7.5],                  # riskySafe
+                        [0, 0.1,-1, 0.1,0.1,10, -99,0.1,0.1,0.1,7.5],     # goalStretch
+                        [0, 1,  2,  3,  4,  10, -99,6,  8,  0.1,7.5],                # vulnerable
+                        [0, 1,  2,  3,  4,  10, 6,  -99,-1, 3,  7.5],                 # baricade
+                        [0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0]])                       # goal
 
 inf = 9999999999999
 
@@ -48,7 +48,7 @@ actSuicide = 6
 actBaricade = 7
 actBecomeVulnerable = 8
 actKill = 9
-actGoalStretch = 3
+actGoalStretch = 10
 
 
 
@@ -111,50 +111,51 @@ class LudoPlayerQ:
 
         def getActions(state, next_states):
             actionsArr = [goal, goal, goal, goal]
+            print("\n\nchoosing action")
             for nextState in next_states:
                 qState = getState(state)
                 #print(qState)
                 nextQState = getState(nextState)
-                # if nextState:
-                #    print("\nnext_state",nextState[:],"\nnextQState",nextQState)
-                # else:
-                #     print("\nnext_state",nextState,"\nnextQState",nextQState)
-                    
-                #print(nextQState)
-                if nextQState:
-                   for i in range(len(nextQState)): # nextState[0] is player 0
+                if nextState:
+                   print("\nqState",qState[:],"\nnextQState",nextQState)
+                else:
+                    print("\nqState",qState,"\nnextQState",nextQState)
+
+
+                for i in range(0,4):
                     '''
                     Use the previous state, qState
                     '''
-                    if qState[i] != nextQState:
-                        if qState[i] == home:
-                            if nextQState[i]:
-                                actionsArr[i] = actOutHome
-                            
-                        elif qState[i] != goal:
-                            if nextQState[i] == common:
-                                actionsArr[i] = actCommon
-                            if will_send_opponent_home(state,nextState):
-                                actionsArr[i] = actKill
-                            elif not token_vulnerability(nextState, i):
-                                actionsArr[i] = actSafe
-                            elif nextQState[i] % 13 == 1:
-                                actionsArr[i] = actRiskySafe
-                            elif star_jump(nextQState[i]):
-                                actionsArr[i] = actStar
-                            elif nextQState[i] == goal:
-                                actionsArr[i] = actGoal
-                            elif nextQState[i] == goalStretch:
-                                actionsArr[i] = actGoalStretch
-                            elif  will_send_self_home(state, nextState):
-                                actionsArr[i] = actSuicide
-                            elif nextQState[i] == baricade:
-                                actionsArr[i] = actBaricade
-                            elif nextQState[i] == vulnerable:
-                                actionsArr[i] = actBecomeVulnerable
-                            elif nextQState[i] == goalStretch:
-                                actionsArr[i] = actGoalStretch
-                                            
+                    if nextQState:
+                        if qState[i] != nextQState:
+                            if qState[i] == home:
+                                if nextQState[i]:
+                                    actionsArr[i] = actOutHome
+                                
+                            elif qState[i] != goal:
+                                if nextQState[i] == common:
+                                    actionsArr[i] = actCommon
+                                if will_send_opponent_home(state,nextState):
+                                    actionsArr[i] = actKill
+                                elif not token_vulnerability(nextState, i):
+                                    actionsArr[i] = actSafe
+                                elif nextQState[i] % 13 == 1:
+                                    actionsArr[i] = actRiskySafe
+                                elif star_jump(nextQState[i]):
+                                    actionsArr[i] = actStar
+                                elif nextQState[i] == goal:
+                                    actionsArr[i] = actGoal
+                                elif nextQState[i] == goalStretch:
+                                    actionsArr[i] = actGoalStretch
+                                elif  will_send_self_home(state, nextState):
+                                    actionsArr[i] = actSuicide
+                                elif nextQState[i] == baricade:
+                                    actionsArr[i] = actBaricade
+                                elif nextQState[i] == vulnerable:
+                                    actionsArr[i] = actBecomeVulnerable
+                                elif nextQState[i] == goalStretch:
+                                    actionsArr[i] = actGoalStretch
+                                                    
             return actionsArr
 
         def getState(state):
@@ -197,14 +198,16 @@ class LudoPlayerQ:
             '''
             The index here does not fit. make sure to move the correct token 
             '''
+            print("actionArr",actionArr)
             for i in range(len(actionArr)):
                 #print("len(actionArr)", actionArr, qState, qTable[qState[i]])
                 if qTable[qState[i]][actionArr[i]] > highestReward: 
                     highestIdx = i
                     highestReward = qTable[qState[i]][actionArr[i]]
+                print(highestReward,highestIdx)
             return highestIdx
             
         move = chooseAction(state,next_states)
-        # print("move\t", move)
+        print("move\t", move)
         return move
 

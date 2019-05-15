@@ -3,7 +3,7 @@ A python3 ludo simulator. Forked from haukuri.
 ### install
 
 ```
-$ git clone https://github.com/RasmusHaugaard/pyludo.git
+$ git clone https://github.com/Klinggaard/pyludo.git
 ```
 ```
 $ cd pyludo

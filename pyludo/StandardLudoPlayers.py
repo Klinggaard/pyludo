@@ -1,10 +1,6 @@
 import random
 import numpy as np
-from .utils import token_vulnerability
-from .utils import token_barricade
-from .utils import star_jump
-from .utils import will_send_self_home
-from .utils import will_send_opponent_home
+from .utils import token_vulnerability, token_barricade, star_jump, will_send_self_home, will_send_opponent_home 
 
 """
 def play(self, state, dice_roll, next_states):
@@ -24,7 +20,7 @@ qTable = np.array(     [[10,0,0,0,0,0,0,0,0,0], # home
                         [0,1,2,3,4,10,-100,7,8,9],  # common
                         [0,1,2,3,4,10,-100,3,-10,5],  # safe
                         [0,1,2,1,4,10,-100,7,2,0],  # riskySafe
-                        [0,0,0,0,0,10,-100,0,0,0],  # goalStretch
+                        [0,0,-1,0,0,10,-100,0,0,0],  # goalStretch
                         [0,1,2,3,4,10,-100,6,8,0],  # vulnerable
                         [0,1,2,3,4,10,6,-200,-1,3],  # baricade
                         [0,0,0,0,0,0,0,0,0,0]]) # goal
@@ -119,6 +115,11 @@ class LudoPlayerQ:
                 qState = getState(state)
                 #print(qState)
                 nextQState = getState(nextState)
+                # if nextState:
+                #    print("\nnext_state",nextState[:],"\nnextQState",nextQState)
+                # else:
+                #     print("\nnext_state",nextState,"\nnextQState",nextQState)
+                    
                 #print(nextQState)
                 if nextQState:
                    for i in range(len(nextQState)): # nextState[0] is player 0
@@ -192,14 +193,18 @@ class LudoPlayerQ:
             actionArr = getActions(state,next_states)
             qState = getState(state)
             highestReward = -inf
-            highestIdx = 0
+            highestIdx = -1
+            '''
+            The index here does not fit. make sure to move the correct token 
+            '''
             for i in range(len(actionArr)):
-                if qTable[qState[i]][actionArr[i]] > highestReward:
+                #print("len(actionArr)", actionArr, qState, qTable[qState[i]])
+                if qTable[qState[i]][actionArr[i]] > highestReward: 
                     highestIdx = i
                     highestReward = qTable[qState[i]][actionArr[i]]
             return highestIdx
             
         move = chooseAction(state,next_states)
-        print(move)
+        # print("move\t", move)
         return move
 

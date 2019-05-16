@@ -139,7 +139,7 @@ class LudoPlayerQ:
                             if will_send_opponent_home(state,nextState):
                                 actionsArr[i] = actKill
                             elif not token_vulnerability(nextState, i):
-                                actionsArr[i] = actSafe
+                                actionsArr[i] = actSafe  # Check if on globe not "not virus"
                             elif nextQState[i] % 13 == 1:
                                 actionsArr[i] = actRiskySafe
                             elif star_jump(nextQState[i]):

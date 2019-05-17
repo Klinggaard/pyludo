@@ -16,7 +16,7 @@ def play(self, state, dice_roll, next_states):
 """
 
 
-qTable = np.array(     [[10,    0,  0,  0,  0,  0,  0,  0,  0,  0],                         # home
+qTable = np.array(     [[10,    0,  0,  0,  0,  0,  0,  0,  0,  0, 0],                         # home
                         [0, 1,  2,  3,  4,  10, -99,7,  8,  9,  7.5],                  # common
                         [0, 1,  2,  3,  4,  10, -99,3,  -10,5,  7.5],                # safe
                         [0, 1,  2,  1,  4,  10, -99,7,  2,  0,  7.5],                  # riskySafe
@@ -102,7 +102,7 @@ class LudoPlayerDefensive:
 
 
 class LudoPlayerQ:
-    """" Learns to play the game via Q-learning"""
+    """" Learns to play the game via Q-learning """
 
     name = 'qLeaner'
 
@@ -124,23 +124,32 @@ class LudoPlayerQ:
                     
                     if will_send_opponent_home(state, next_states[i]):
                         actionsArr[i].append(actKill)
+
                     if will_send_self_home(state, next_states[i]):
                         actionsArr[i].append(actSuicide)
+
                     if nextQState[i] == baricade:
                         actionsArr[i].append(actBaricade)
+
                     if nextQState[i] == vulnerable:
                         actionsArr[i].append(actBecomeVulnerable)
+
                     if next_states[i][0][i] == 1:    # Token moved out of home
                         actionsArr[i].append(actOutHome)
+
                     if nextQState[i] == safe:
                         actionsArr[i].append(actSafe)
+
                     if star_jump(next_states[i][0][i]):
                         actionsArr[i].append(actStar)
+
                     if nextQState == common:
-                        if next_states[i][0][i] % 13 == 1 and np.sum(state[next_states[i][0][i] // 13] == -1) != 0:
+                        if next_states[i][0][i] % 13 == 1 and np.sum(state[next_states[i][0][i] // 13] == -1) != 0: # token standing infront of not empty enemy home
                             actionsArr[i].append(actRiskySafe)
+
                     if nextQState[i] == goal:
                         actionsArr[i].append(actGoal)
+
                     if nextQState[i] == goalStretch:
                         actionsArr[i].append(actGoalStretch)
                 else:

@@ -110,55 +110,42 @@ class LudoPlayerQ:
     def play(state, dice_roll, next_states):
 
         def getActions(state, next_states):
-            actionsArr = [None, None, None, None]
-            print("\n\nchoosing action")
-            for nextState in next_states:
-                qState = getState(state)
+            actionsArr = [[], [], [], []]
+            #print("\n\nchoosing action")
+            for i in range(len(next_states)):
 
-                nextQState = getState(nextState)
-                if nextState:
-                   print("\nqState",qState[:],"\nnextQState",nextQState)
-                else:
-                    print("\nqState",qState,"\nnextQState",nextQState)
+                #print(next_states[i])
+                if type(next_states[i]) != bool:
 
-                for i in range(0,4):
-                    '''
-                    Use the previous state, qState
-                    '''
-                    if nextQState:
+                    #print("i",next_states[i][0][i],next_states[i][0][i] // 13)
+                    nextQState = getState(next_states[i])
+                    if nextQState[i] == common:
+                        actionsArr[i].append(actCommon)
                     
-                        #print("\n\tqState",qState[:],"\nnextQState",nextQState)
-                        if qState[i] == home:
-                            if nextQState[i] != home:
-                                actionsArr[i] = actOutHome
-                            
-                            
-                        elif qState[i] != goal:
-                            if nextQState[i] == common:
-                                actionsArr[i] = actCommon
-                            if will_send_opponent_home(state,nextState):
-                                actionsArr[i] = actKill
-                            elif not token_vulnerability(nextState, i):
-                                actionsArr[i] = actSafe  # Check if on globe not "not virus"
-                            elif nextQState[i] % 13 == 1:
-                                actionsArr[i] = actRiskySafe
-                            elif star_jump(nextQState[i]):
-                                actionsArr[i] = actStar
-                            elif nextQState[i] == goal:
-                                actionsArr[i] = actGoal
-                            elif nextQState[i] == goalStretch:
-                                actionsArr[i] = actGoalStretch
-                            elif  will_send_self_home(state, nextState):
-                                actionsArr[i] = actSuicide
-                            elif nextQState[i] == baricade:
-                                actionsArr[i] = actBaricade
-                            elif nextQState[i] == vulnerable:
-                                actionsArr[i] = actBecomeVulnerable
-                            elif nextQState[i] == goalStretch:
-                                actionsArr[i] = actGoalStretch
-
-                    else:
-                        actionsArr[i] = None                            
+                    if will_send_opponent_home(state, next_states[i]):
+                        actionsArr[i].append(actKill)
+                    if will_send_self_home(state, next_states[i]):
+                        actionsArr[i].append(actSuicide)
+                    if nextQState[i] == baricade:
+                        actionsArr[i].append(actBaricade)
+                    if nextQState[i] == vulnerable:
+                        actionsArr[i].append(actBecomeVulnerable)
+                    if next_states[i][0][i] == 1:    # Token moved out of home
+                        actionsArr[i].append(actOutHome)
+                    if nextQState[i] == safe:
+                        actionsArr[i].append(actSafe)
+                    if star_jump(next_states[i][0][i]):
+                        actionsArr[i].append(actStar)
+                    if nextQState == common:
+                        if next_states[i][0][i] % 13 == 1 and np.sum(state[next_states[i][0][i] // 13] == -1) != 0:
+                            actionsArr[i].append(actRiskySafe)
+                    if nextQState[i] == goal:
+                        actionsArr[i].append(actGoal)
+                    if nextQState[i] == goalStretch:
+                        actionsArr[i].append(actGoalStretch)
+                else:
+                    actionsArr[i] = [None]
+                                          
             return actionsArr
 
         def getState(state):
@@ -198,20 +185,22 @@ class LudoPlayerQ:
             qState = getState(state)
             highestReward = -inf
             highestIdx = -1
-            '''
-            The index here does not fit. make sure to move the correct token 
-            '''
-            print("-qState",qState,"\nactionArr",actionArr)
+            #print("-qState",qState,"\nactionArr",actionArr)
             for i in range(len(actionArr)):
-                #print("len(actionArr)", actionArr, qState, qTable[qState[i]])
-                if actionArr[i]:    
-                    if qTable[qState[i]][actionArr[i]] > highestReward: 
+                #print("len(actionArr)", actionArr)
+                if actionArr[i] != [None]:    
+                    jReward = 0
+                    #print(actionArr[i])
+                    for j in range(len(actionArr[i])):  # Summing the score of all actions in move
+                        jReward += qTable[qState[i]][actionArr[i][j]]
+
+                    if jReward > highestReward: 
                         highestIdx = i
-                        highestReward = qTable[qState[i]][actionArr[i]]
-                    print(highestReward,highestIdx)
+                        highestReward = jReward
+                    #print(highestReward,highestIdx)
             return highestIdx
             
         move = chooseAction(state,next_states)
-        print("move\t", move)
+        #print("move\t", move)
         return move
 

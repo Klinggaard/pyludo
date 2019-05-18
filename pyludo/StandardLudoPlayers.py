@@ -161,8 +161,8 @@ class LudoPlayerQ:
                 for i in previousAction:
                     for j in action:
                         qTable[previousState][i] += alpha * (reward + gamma * qTable[state][j]) - qTable[previousState][i]
-            previousState = currentState;
-            previousAction = action;
+            previousState = currentState
+            previousAction = action
 
         def getActions(state, next_states):
             actionsArr = [[], [], [], []]

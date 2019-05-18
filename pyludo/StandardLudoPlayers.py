@@ -1,7 +1,6 @@
 import random
 import numpy as np
 from .utils import token_vulnerability, token_barricade, star_jump, will_send_self_home, will_send_opponent_home
-from qLearningTrainer import ans
 
 """
 def play(self, state, dice_roll, next_states):
@@ -267,7 +266,7 @@ class LudoPlayerQ:
         
         q_state = getState(state)
         move, actions = chooseAction(state,next_states)
-        if ans == 'y':
+        if '1' == 'y':
             getReward(actions,q_state)
         
         return move

@@ -16,16 +16,19 @@ def play(self, state, dice_roll, next_states):
 """
 
 
-qTable = np.array(     [[10,    0,  0,  0,  0,  0,  0,  0,  0,  0, 0],                         # home
+qTable = np.array(     [[19,    0,  0,  0,  0,  0,  0,  0,  0,  0, 0],                         # home
                         [0, 1,  2,  3,  4,  10, -99,7,  8,  9,  7.5],                  # common
-                        [0, 1,  2,  3,  4,  10, -99,3,  -10,5,  7.5],                # safe
-                        [0, 1,  2,  1,  4,  10, -99,7,  2,  0,  7.5],                  # riskySafe
+                        [0, 1,  2,  3,  4,  10, -99,3,  -10,12,  7.5],                # safe
+                        [0, 1,  2,  1,  4,  10, -99,7,  2,  11,  7.5],                  # riskySafe
                         [0, 0.1,-1, 0.1,0.1,10, -99,0.1,0.1,0.1,7.5],     # goalStretch
-                        [0, 1,  2,  3,  4,  10, -99,6,  8,  0.1,7.5],                # vulnerable
-                        [0, 1,  2,  3,  4,  10, 6,  -99,-1, 3,  7.5],                 # baricade
+                        [0, 1,  2,  3,  4,  10, -99,6,  8,  5,7.5],                # vulnerable
+                        [0, 1,  2,  3,  4,  10, -99,6,  -1, 6,  7.5],                 # baricade
                         [0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0]])                       # goal
 
 inf = 9999999999999
+
+previousState = [-1]
+previousAction = [-1]
 
 # q-Table states 
 home = 0
@@ -108,6 +111,44 @@ class LudoPlayerQ:
 
     @staticmethod
     def play(state, dice_roll, next_states):
+        
+        def getReward(action, currentState):
+            reward = 0.0
+
+            if actOutHome in previousAction:
+                reward += 70
+
+            if actCommon in previousAction:
+                reward += 5
+
+            if actSafe in previousAction:
+                reward += 50
+
+            if actRiskySafe  in previousAction:
+                reward += 5
+
+            if actStar in previousAction:
+                reward += 5
+            
+            if actGoal in previousAction:
+                reward += 100
+
+            if actSuicide in previousAction:
+                reward += 5
+
+            if actBaricade in previousAction:
+                reward += 50
+            
+            if actBecomeVulnerable in previousAction:
+                reward += 5
+            
+            if actKill in previousAction:
+                reward += 80
+            
+            if actGoal in previousAction:
+                reward += 5
+
+            reward = reward/len(previousAction)
 
         def getActions(state, next_states):
             actionsArr = [[], [], [], []]

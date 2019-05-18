@@ -1,6 +1,7 @@
 import random
 import numpy as np
-from .utils import token_vulnerability, token_barricade, star_jump, will_send_self_home, will_send_opponent_home 
+from .utils import token_vulnerability, token_barricade, star_jump, will_send_self_home, will_send_opponent_home
+from qLearningTrainer import ans
 
 """
 def play(self, state, dice_roll, next_states):
@@ -16,6 +17,7 @@ def play(self, state, dice_roll, next_states):
 """
 
 
+
 qTable = np.array(     [[19,    0,  0,  0,  0,  0,  0,  0,  0,  0, 0],                         # home
                         [0, 1,  2,  3,  4,  10, -99,7,  8,  9,  7.5],                  # common
                         [0, 1,  2,  3,  4,  10, -99,3,  -10,12,  7.5],                # safe
@@ -27,8 +29,10 @@ qTable = np.array(     [[19,    0,  0,  0,  0,  0,  0,  0,  0,  0, 0],          
 
 inf = 9999999999999
 
-previousState = [-1]
-previousAction = [-1]
+
+
+alpha = 0.2
+gamma = 0.9
 
 # q-Table states 
 home = 0
@@ -109,6 +113,9 @@ class LudoPlayerQ:
 
     name = 'qLeaner'
 
+    previousState = [-1]
+    previousAction = [-1]
+
     @staticmethod
     def play(state, dice_roll, next_states):
         
@@ -119,36 +126,44 @@ class LudoPlayerQ:
                 reward += 70
 
             if actCommon in previousAction:
-                reward += 5
+                reward += 15
 
             if actSafe in previousAction:
                 reward += 50
 
             if actRiskySafe  in previousAction:
-                reward += 5
+                reward += 20
 
             if actStar in previousAction:
-                reward += 5
+                reward += 60
             
             if actGoal in previousAction:
                 reward += 100
 
             if actSuicide in previousAction:
-                reward += 5
+                reward += -150
 
             if actBaricade in previousAction:
                 reward += 50
             
             if actBecomeVulnerable in previousAction:
-                reward += 5
+                reward += -10
             
             if actKill in previousAction:
                 reward += 80
             
-            if actGoal in previousAction:
-                reward += 5
+            if actGoalStretch in previousAction:
+                reward += 40
 
             reward = reward/len(previousAction)
+
+            # Update qTable
+            if reward:
+                for i in previousAction:
+                    for j in action:
+                        qTable[previousState][i] += alpha * (reward + gamma * qTable[state][j]) - qTable[previousState][i]
+            previousState = currentState;
+            previousAction = action;
 
         def getActions(state, next_states):
             actionsArr = [[], [], [], []]
@@ -248,9 +263,12 @@ class LudoPlayerQ:
                         highestIdx = i
                         highestReward = jReward
                     #print(highestReward,highestIdx)
-            return highestIdx
-            
-        move = chooseAction(state,next_states)
-        #print("move\t", move)
+            return highestIdx, actionArr
+        
+        q_state = getState(state)
+        move, actions = chooseAction(state,next_states)
+        if ans == 'y':
+            getReward(actions,q_state)
+        
         return move
 

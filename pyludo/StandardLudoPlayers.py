@@ -17,21 +17,24 @@ def play(self, state, dice_roll, next_states):
 
 
 
-qTable = np.array(     [[19,    0,  0,  0,  0,  0,  0,  0,  0,  0, 0],                         # home
-                        [0, 1,  2,  3,  4,  10, -99,7,  8,  9,  7.5],                  # common
-                        [0, 1,  2,  3,  4,  10, -99,3,  -10,12,  7.5],                # safe
-                        [0, 1,  2,  1,  4,  10, -99,7,  2,  11,  7.5],                  # riskySafe
-                        [0, 0.1,-1, 0.1,0.1,10, -99,0.1,0.1,0.1,7.5],     # goalStretch
-                        [0, 1,  2,  3,  4,  10, -99,6,  8,  5,7.5],                # vulnerable
-                        [0, 1,  2,  3,  4,  10, -99,6,  -1, 6,  7.5],                 # baricade
-                        [0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0]])                       # goal
+# qTable = np.array(     [[19,    0,  0,  0,  0,  0,  0,  0,  0,  0, 0],                         # home
+#                         [0, 1,  2,  3,  4,  10, -99,7,  8,  9,  7.5],                  # common
+#                         [0, 1,  2,  3,  4,  10, -99,3,  -10,12,  7.5],                # safe
+#                         [0, 1,  2,  1,  4,  10, -99,7,  2,  11,  7.5],                  # riskySafe
+#                         [0, 0.1,-1, 0.1,0.1,10, -99,0.1,0.1,0.1,7.5],     # goalStretch
+#                         [0, 1,  2,  3,  4,  10, -99,6,  8,  5,7.5],                # vulnerable
+#                         [0, 1,  2,  3,  4,  10, -99,6,  -1, 6,  7.5],                 # baricade
+#                         [0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0]])                       # goal
+
+qTable = np.zeros([8,11])
 
 inf = 9999999999999
 
-
+preState = -1
+preAct = [-1]
 
 alpha = 0.2
-gamma = 0.9
+gamma = 0.5
 
 # q-Table states 
 home = 0
@@ -112,57 +115,61 @@ class LudoPlayerQ:
 
     name = 'qLeaner'
 
-    previousState = [-1]
-    previousAction = [-1]
 
     @staticmethod
     def play(state, dice_roll, next_states):
-        
+
         def getReward(action, currentState):
             reward = 0.0
+            global preAct
+            global preState
 
-            if actOutHome in previousAction:
+            if actOutHome in preAct:
                 reward += 70
 
-            if actCommon in previousAction:
+            if actCommon in preAct:
                 reward += 15
 
-            if actSafe in previousAction:
+            if actSafe in preAct:
                 reward += 50
 
-            if actRiskySafe  in previousAction:
+            if actRiskySafe  in preAct:
                 reward += 20
 
-            if actStar in previousAction:
+            if actStar in preAct:
                 reward += 60
             
-            if actGoal in previousAction:
+            if actGoal in preAct:
                 reward += 100
 
-            if actSuicide in previousAction:
+            if actSuicide in preAct:
                 reward += -150
 
-            if actBaricade in previousAction:
+            if actBaricade in preAct:
                 reward += 50
             
-            if actBecomeVulnerable in previousAction:
+            if actBecomeVulnerable in preAct:
                 reward += -10
             
-            if actKill in previousAction:
+            if actKill in preAct:
                 reward += 80
             
-            if actGoalStretch in previousAction:
+            if actGoalStretch in preAct:
                 reward += 40
 
-            reward = reward/len(previousAction)
+
 
             # Update qTable
-            if reward:
-                for i in previousAction:
+            if reward and len(preAct):
+                reward = reward/len(preAct)
+                for i in preAct:
                     for j in action:
-                        qTable[previousState][i] += alpha * (reward + gamma * qTable[state][j]) - qTable[previousState][i]
-            previousState = currentState
-            previousAction = action
+                        qTable[preState][i] += alpha * (reward + gamma * qTable[currentState][j]) - qTable[preState][i]
+
+            
+            preState = currentState
+            preAct = action
+
 
         def getActions(state, next_states):
             actionsArr = [[], [], [], []]
@@ -261,13 +268,13 @@ class LudoPlayerQ:
                     if jReward > highestReward: 
                         highestIdx = i
                         highestReward = jReward
-                    #print(highestReward,highestIdx)
+
             return highestIdx, actionArr
         
         q_state = getState(state)
         move, actions = chooseAction(state,next_states)
-        if '1' == 'y':
-            getReward(actions,q_state)
         
+        # training
+        getReward(actions[move],q_state[move])
         return move
 

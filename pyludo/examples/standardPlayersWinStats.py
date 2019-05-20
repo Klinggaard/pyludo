@@ -4,6 +4,7 @@ import random
 import time
 import numpy as np
 import csv
+import progressbar
 
 players = [
     LudoPlayerQ(),
@@ -17,7 +18,8 @@ for player in players:
     scores[player.name] = 0
 
     
-n = 200001
+n = 30001
+interval = (n-1)/1000
 
 print(qTable)
 
@@ -31,19 +33,26 @@ highWRTable = np.copy(qTable)
 for i in range(len(players)):
     winRates[i].append(players[i].name)
 
+bar = progressbar.ProgressBar(maxval=n, \
+    widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+bar.start()
+
 start_time = time.time()
 for i in range(n):
     random.shuffle(players)
     ludoGame = LudoGame(players)
     winner = ludoGame.play_full_game()
     scores[players[winner].name] += 1
-    print('Game ', i, ' done')
-    if i % 100 == 0 and i > 50:
+    #print('Game ', i, ' done')
+    
+    bar.update(i+1)
+
+    if i % interval == 0 and i > 1:
         for player in players:
             if player.name == "qLearner":
                 winRates[0].append(scores[player.name])
 
-                if (scores[player.name]-preTotal) / 100 > highWR / 100:
+                if (scores[player.name]-preTotal) / interval > highWR / interval:
                     highN = i
                     highWR = scores[player.name] - preTotal
                     preTotal = scores[player.name]
@@ -55,6 +64,7 @@ for i in range(n):
                 winRates[2].append(scores[player.name])
             elif player.name == "aggressive":
                 winRates[3].append(scores[player.name])
+    
 
 
 duration = time.time() - start_time

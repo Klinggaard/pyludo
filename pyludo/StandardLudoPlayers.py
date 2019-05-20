@@ -113,7 +113,7 @@ class LudoPlayerDefensive:
 class LudoPlayerQ:
     """" Learns to play the game via Q-learning """
 
-    name = 'qLeaner'
+    name = 'qLearner'
 
 
     @staticmethod

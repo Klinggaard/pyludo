@@ -40,7 +40,7 @@ for i in range(n):
     print('Game ', i, ' done')
     if i % 100 == 0 and i > 50:
         for player in players:
-            if player.name == "qLeaner":
+            if player.name == "qLearner":
                 winRates[0].append(scores[player.name])
 
                 if (scores[player.name]-preTotal) / 100 > highWR / 100:

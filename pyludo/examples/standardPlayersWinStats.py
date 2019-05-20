@@ -18,8 +18,8 @@ for player in players:
     scores[player.name] = 0
 
     
-n = 30001
-interval = (n-1)/1000
+n = 7501
+interval = (n-1)/100
 
 print(qTable)
 
@@ -55,8 +55,8 @@ for i in range(n):
                 if (scores[player.name]-preTotal) / interval > highWR / interval:
                     highN = i
                     highWR = scores[player.name] - preTotal
-                    preTotal = scores[player.name]
                     highWRTable = np.copy(qTable)
+                preTotal = scores[player.name]
 
             elif player.name == "random":
                 winRates[1].append(scores[player.name])

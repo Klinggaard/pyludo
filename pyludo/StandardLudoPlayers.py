@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from .utils import token_vulnerability, token_barricade, star_jump, will_send_self_home, will_send_opponent_home
+from .utils import token_vulnerability, token_barricade, star_jump, will_send_self_home, will_send_opponent_home, is_globe_pos
 
 """
 def play(self, state, dice_roll, next_states):
@@ -17,10 +17,10 @@ def play(self, state, dice_roll, next_states):
 
 
 
-# qTable = np.array(     [[19,    0,  0,  0,  0,  0,  0,  0,  0,  0, 0],                         # home
-#                         [0, 1,  2,  3,  4,  10, -99,7,  8,  9,  7.5],                  # common
-#                         [0, 1,  2,  3,  4,  10, -99,3,  -10,12,  7.5],                # safe
-#                         [0, 1,  2,  1,  4,  10, -99,7,  2,  11,  7.5],                  # riskySafe
+# qTable = np.array(     [[15.185944384008213,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,15.779504600005556,0.0],                         # home
+#                         [0.0,3.895045188503694,0.0,0.0,8.50828450060598,20.514790145664374,-9.661715499394022,-9.661715499394022,-1.5991715499394024,10.53508284500606,9.00582845006059],                  # common
+#                         [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],                # safe
+#                         [0.0,3.4035359958055356,0.0,0.0,5.337858941652015,0.0,-28.886899715089186,11.859443840082111,5.337858941652015,10.944384008210978,0.0],                  # riskySafe
 #                         [0, 0.1,-1, 0.1,0.1,10, -99,0.1,0.1,0.1,7.5],     # goalStretch
 #                         [0, 1,  2,  3,  4,  10, -99,6,  8,  5,7.5],                # vulnerable
 #                         [0, 1,  2,  3,  4,  10, -99,6,  -1, 6,  7.5],                 # baricade
@@ -134,7 +134,7 @@ class LudoPlayerQ:
                 reward += 50
 
             if actRiskySafe  in preAct:
-                reward += 20
+                reward -= 20
 
             if actStar in preAct:
                 reward += 60
@@ -230,7 +230,7 @@ class LudoPlayerQ:
                     if position > -1 and position < 52:
                         stateArr[i] = common
 
-                    if position == 1:
+                    if is_globe_pos(position):
                         stateArr[i] = safe
 
                     if token_barricade(state, i):

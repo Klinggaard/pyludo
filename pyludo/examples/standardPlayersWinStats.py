@@ -18,7 +18,7 @@ for player in players:
     scores[player.name] = 0
 
     
-n = 1
+n = 200
 trainIterations = 50
 testIterations = 400 
 
@@ -41,16 +41,16 @@ bar.start()
 start_time = time.time()
 for j in range(n):
 
-    # # training
-    # for player in players:
-    #     if player.name == "qLearner":
-    #         player.train = True
-    # for i in range(trainIterations):
-    #     random.shuffle(players)
-    #     ludoGame = LudoGame(players)
-    #     winner = ludoGame.play_full_game()
-    #     #scores[players[winner].name] += 1
-    # #print('Game ', i, ' done')
+    # training
+    for player in players:
+        if player.name == "qLearner":
+            player.train = True
+    for i in range(trainIterations):
+        random.shuffle(players)
+        ludoGame = LudoGame(players)
+        winner = ludoGame.play_full_game()
+        #scores[players[winner].name] += 1
+    #print('Game ', i, ' done')
    
 
     # Collecting data

@@ -65,7 +65,7 @@ for j in range(n):
             winRates[0].append(scores[player.name])
 
             if (scores[player.name]-preTotal) / 1000 > highWR / 1000:
-                highN = i
+                highN = n
                 highWR = scores[player.name] - preTotal
                 highWRTable = np.copy(qTable)
             preTotal = scores[player.name]

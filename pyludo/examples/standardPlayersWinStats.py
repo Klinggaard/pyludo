@@ -13,13 +13,15 @@ players = [
     LudoPlayerDefensive(),
 ]
 
+train = True
+
 scores = {}
 for player in players:
     scores[player.name] = 0
 
     
-n = 7501
-interval = (n-1)/100
+n = 500
+trainIterations = 50 
 
 print(qTable)
 
@@ -38,33 +40,43 @@ bar = progressbar.ProgressBar(maxval=n, \
 bar.start()
 
 start_time = time.time()
-for i in range(n):
-    random.shuffle(players)
-    ludoGame = LudoGame(players)
-    winner = ludoGame.play_full_game()
-    scores[players[winner].name] += 1
+for j in range(n):
+
+    # training
+    LudoPlayerQ.train = True
+    for i in range(trainIterations):
+        random.shuffle(players)
+        ludoGame = LudoGame(players)
+        winner = ludoGame.play_full_game()
+        #scores[players[winner].name] += 1
     #print('Game ', i, ' done')
-    
-    bar.update(i+1)
 
-    if i % interval == 0 and i > 1:
-        for player in players:
-            if player.name == "qLearner":
-                winRates[0].append(scores[player.name])
+    LudoPlayerQ.train = False
 
-                if (scores[player.name]-preTotal) / interval > highWR / interval:
-                    highN = i
-                    highWR = scores[player.name] - preTotal
-                    highWRTable = np.copy(qTable)
-                preTotal = scores[player.name]
+    # Collecting data
+    for i in range(1000):
+        random.shuffle(players)
+        ludoGame = LudoGame(players)
+        winner = ludoGame.play_full_game()
+        scores[players[winner].name] += 1
+       
+    for player in players:
+        if player.name == "qLearner":
+            winRates[0].append(scores[player.name])
 
-            elif player.name == "random":
-                winRates[1].append(scores[player.name])
-            elif player.name == "defensive":
-                winRates[2].append(scores[player.name])
-            elif player.name == "aggressive":
-                winRates[3].append(scores[player.name])
-    
+            if (scores[player.name]-preTotal) / 1000 > highWR / 1000:
+                highN = i
+                highWR = scores[player.name] - preTotal
+                highWRTable = np.copy(qTable)
+            preTotal = scores[player.name]
+        elif player.name == "random":
+            winRates[1].append(scores[player.name])
+        elif player.name == "defensive":
+            winRates[2].append(scores[player.name])
+        elif player.name == "aggressive":
+            winRates[3].append(scores[player.name])
+
+    bar.update(j+1)
 
 
 duration = time.time() - start_time

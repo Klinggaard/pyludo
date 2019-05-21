@@ -7,21 +7,20 @@ import csv
 import progressbar
 
 players = [
-    LudoPlayerQ(),
+    LudoPlayerQ(False),
     LudoPlayerRandom(),
     LudoPlayerAggressive(),
     LudoPlayerDefensive(),
 ]
-
-train = True
 
 scores = {}
 for player in players:
     scores[player.name] = 0
 
     
-n = 500
-trainIterations = 50 
+n = 1
+trainIterations = 50
+testIterations = 400 
 
 print(qTable)
 
@@ -42,19 +41,23 @@ bar.start()
 start_time = time.time()
 for j in range(n):
 
-    # training
-    LudoPlayerQ.train = True
-    for i in range(trainIterations):
-        random.shuffle(players)
-        ludoGame = LudoGame(players)
-        winner = ludoGame.play_full_game()
-        #scores[players[winner].name] += 1
-    #print('Game ', i, ' done')
-
-    LudoPlayerQ.train = False
+    # # training
+    # for player in players:
+    #     if player.name == "qLearner":
+    #         player.train = True
+    # for i in range(trainIterations):
+    #     random.shuffle(players)
+    #     ludoGame = LudoGame(players)
+    #     winner = ludoGame.play_full_game()
+    #     #scores[players[winner].name] += 1
+    # #print('Game ', i, ' done')
+   
 
     # Collecting data
-    for i in range(1000):
+    for player in players:
+        if player.name == "qLearner":
+            player.train = False
+    for i in range(testIterations):
         random.shuffle(players)
         ludoGame = LudoGame(players)
         winner = ludoGame.play_full_game()
@@ -64,7 +67,7 @@ for j in range(n):
         if player.name == "qLearner":
             winRates[0].append(scores[player.name])
 
-            if (scores[player.name]-preTotal) / 1000 > highWR / 1000:
+            if (scores[player.name]-preTotal) / 400 > highWR / 400:
                 highN = n
                 highWR = scores[player.name] - preTotal
                 highWRTable = np.copy(qTable)

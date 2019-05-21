@@ -1,7 +1,6 @@
 import random
 import numpy as np
 from .utils import token_vulnerability, token_barricade, star_jump, will_send_self_home, will_send_opponent_home, is_globe_pos
-
 """
 def play(self, state, dice_roll, next_states):
     :param state:
@@ -115,9 +114,11 @@ class LudoPlayerQ:
 
     name = 'qLearner'
 
+    def __init__(self):
+        self.train = False
 
-    @staticmethod
-    def play(state, dice_roll, next_states):
+    #@staticmethod
+    def play(self,state, dice_roll, next_states):
 
         def getReward(action, currentState):
             reward = 0.0
@@ -275,6 +276,7 @@ class LudoPlayerQ:
         move, actions = chooseAction(state,next_states)
         
         # training
-        #getReward(actions[move],q_state[move])
+        if self.train:
+            getReward(actions[move],q_state[move])
         return move
 

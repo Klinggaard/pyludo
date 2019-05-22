@@ -1,5 +1,5 @@
 # pyludo
-A python3 ludo simulator. Forked from haukuri.
+A python3 ludo simulator. Forked from Rasmus Haugaard.
 ### install
 
 ```
